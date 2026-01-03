@@ -226,8 +226,8 @@ body {
 }
 
 .btn-add-main {
-    width: 55px;
-    height: 55px;
+    width: 60px;
+    height: 60px;
     border-radius: 50%;
     background: white;
     /* White button on colorful nav */
@@ -235,13 +235,51 @@ body {
     display: flex;
     align-items: center;
     justify-content: center;
-    font-size: 1.6rem;
+    font-size: 1.8rem;
     box-shadow: 0 8px 15px rgba(108, 99, 255, 0.4);
     animation: bounceIn 0.8s;
+    border: 4px solid rgba(255, 255, 255, 0.2);
+    /* Added border line */
+    background-clip: padding-box;
 }
 
 .btn-add-main:active {
     transform: scale(0.9);
+}
+
+/* --- COLORFUL CARDS --- */
+.card-expense {
+    background: linear-gradient(135deg, #FF6584, #e17055);
+    color: white;
+}
+
+.card-expense .text-muted {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.card-expense h6 {
+    color: white !important;
+}
+
+.card-expense i {
+    color: rgba(255, 255, 255, 0.2) !important;
+}
+
+.card-income {
+    background: linear-gradient(135deg, #00B894, #0984e3);
+    color: white;
+}
+
+.card-income .text-muted {
+    color: rgba(255, 255, 255, 0.8) !important;
+}
+
+.card-income h6 {
+    color: white !important;
+}
+
+.card-income i {
+    color: rgba(255, 255, 255, 0.2) !important;
 }
 
 /* --- CATEGORY TABS --- */

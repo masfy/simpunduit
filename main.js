@@ -344,11 +344,28 @@ function renderDashboard() {
     const catTotals = {};
 
     appState.trx.forEach(t => {
-        // Should add Date Filtering logic here (same as v2)
-        if (t.type === 'Pemasukan') inc += Number(t.amount);
-        else {
-            exp += Number(t.amount);
-            catTotals[t.category] = (catTotals[t.category] || 0) + Number(t.amount);
+        const tDate = new Date(t.date);
+        const now = new Date();
+        let isValid = false;
+
+        if (filter === 'daily') {
+            isValid = tDate.toDateString() === now.toDateString();
+        } else if (filter === 'weekly') {
+            const oneWeekAgo = new Date();
+            oneWeekAgo.setDate(now.getDate() - 7);
+            isValid = tDate >= oneWeekAgo;
+        } else if (filter === 'monthly') {
+            isValid = tDate.getMonth() === now.getMonth() && tDate.getFullYear() === now.getFullYear();
+        } else if (filter === 'yearly') {
+            isValid = tDate.getFullYear() === now.getFullYear();
+        }
+
+        if (isValid) {
+            if (t.type === 'Pemasukan') inc += Number(t.amount);
+            else {
+                exp += Number(t.amount);
+                catTotals[t.category] = (catTotals[t.category] || 0) + Number(t.amount);
+            }
         }
     });
 
