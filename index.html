@@ -127,8 +127,11 @@
         /* --- BOTTOM NAV (GRID SYSTEM) --- */
         .bottom-nav {
             position: fixed;
-            bottom: 0;
-            width: 100%;
+            bottom: 30px;
+            /* Raised above the footer */
+            width: 95%;
+            /* Make it float in center */
+            left: 2.5%;
             background: white;
             box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05);
             /* Grid System agar jarak menu RAPI & PRESISI */
@@ -136,8 +139,10 @@
             grid-template-columns: repeat(5, 1fr);
             padding: 12px 5px 8px 5px;
             z-index: 1000;
-            border-top-left-radius: 20px;
-            border-top-right-radius: 20px;
+            border-radius: 20px;
+            /* Rounded all corners since it floats */
+            margin-bottom: 10px;
+            /* Space from footer */
         }
 
         .nav-item {
@@ -277,12 +282,15 @@
 
         /* FOOTER STYLING */
         .app-footer {
-            margin-top: 50px;
-            padding: 20px 0;
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            padding: 10px 0;
             text-align: center;
             color: #b2bec3;
             font-size: 0.75rem;
-            width: 100%;
+            background: var(--light);
+            z-index: 900;
         }
     </style>
 </head>
