@@ -40,23 +40,24 @@
                 <option value="daily">Hari Ini</option>
                 <option value="weekly">Minggu Ini</option>
                 <option value="monthly" selected>Bulan Ini</option>
+                <option value="yearly">Tahun Ini</option>
             </select>
         </div>
 
         <!-- Cards -->
         <div class="row g-3 mb-4">
             <div class="col-6">
-                <div class="stat-card p-3">
-                    <i class="fas fa-arrow-down card-decoration text-secondary"></i>
+                <div class="stat-card p-3 card-expense">
+                    <i class="fas fa-arrow-down card-decoration"></i>
                     <small class="text-muted fw-bold">Pengeluaran</small>
-                    <h6 class="fw-bold text-danger mb-0 mt-1" id="totalExpense">Rp 0</h6>
+                    <h6 class="fw-bold mb-0 mt-1" id="totalExpense">Rp 0</h6>
                 </div>
             </div>
             <div class="col-6">
-                <div class="stat-card p-3">
-                    <i class="fas fa-arrow-up card-decoration text-success"></i>
+                <div class="stat-card p-3 card-income">
+                    <i class="fas fa-arrow-up card-decoration"></i>
                     <small class="text-muted fw-bold">Pemasukan</small>
-                    <h6 class="fw-bold text-success mb-0 mt-1" id="totalIncome">Rp 0</h6>
+                    <h6 class="fw-bold mb-0 mt-1" id="totalIncome">Rp 0</h6>
                 </div>
             </div>
             <div class="col-12">
@@ -88,11 +89,20 @@
         <h5 class="fw-bold mb-4 text-center">Catat Transaksi</h5>
         <div class="stat-card p-4">
             <form id="trxForm">
-                <div class="btn-group w-100 mb-4" role="group">
+                <div class="d-flex gap-2 mb-4">
                     <input type="radio" class="btn-check" name="type" id="typeExp" value="Pengeluaran" checked>
-                    <label class="btn btn-outline-danger" for="typeExp">Pengeluaran</label>
+                    <label
+                        class="btn btn-outline-danger w-50 py-3 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center"
+                        for="typeExp">
+                        <i class="fas fa-arrow-down me-2"></i> Pengeluaran
+                    </label>
+
                     <input type="radio" class="btn-check" name="type" id="typeInc" value="Pemasukan">
-                    <label class="btn btn-outline-success" for="typeInc">Pemasukan</label>
+                    <label
+                        class="btn btn-outline-success w-50 py-3 rounded-pill fw-bold shadow-sm d-flex align-items-center justify-content-center"
+                        for="typeInc">
+                        <i class="fas fa-arrow-up me-2"></i> Pemasukan
+                    </label>
                 </div>
 
                 <div class="mb-3">
