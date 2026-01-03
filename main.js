@@ -305,6 +305,12 @@ function updateProfileUI() {
     document.getElementById('profileNameDisplay').innerText = p.name || 'User';
     document.getElementById('profileStatusDisplay').innerText = p.status || 'Status';
 
+    // Update Header Info
+    const headerName = document.getElementById('headerName');
+    const headerStatus = document.getElementById('headerStatus');
+    if (headerName) headerName.innerText = p.name || 'User';
+    if (headerStatus) headerStatus.innerText = p.status || 'Status';
+
     // Set Form Values
     document.getElementById('editName').value = p.name || '';
     document.getElementById('editStatus').value = p.status || '';
