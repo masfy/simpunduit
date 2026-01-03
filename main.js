@@ -22,7 +22,25 @@ document.addEventListener('DOMContentLoaded', () => {
     loadData();
 
     // Attach event listeners
-    document.getElementById('dashboardFilter').addEventListener('change', renderDashboard);
+    // Filter Dropdown Logic
+    document.querySelectorAll('#filterOptions .dropdown-item').forEach(item => {
+        item.addEventListener('click', (e) => {
+            e.preventDefault();
+            const val = e.target.getAttribute('data-value');
+            const label = e.target.innerText;
+
+            // Update UI
+            document.getElementById('dashboardFilter').value = val;
+            document.getElementById('filterLabel').innerText = label;
+
+            // Update Active State
+            document.querySelectorAll('#filterOptions .dropdown-item').forEach(i => i.classList.remove('active'));
+            e.target.classList.add('active');
+
+            renderDashboard();
+        });
+    });
+    // document.getElementById('dashboardFilter').addEventListener('change', renderDashboard); // Old Logic Removed
     document.getElementById('trxForm').addEventListener('submit', handleTrxSubmit);
     document.getElementById('filePhoto').addEventListener('change', function () { handlePhotoUpload(this); });
     document.querySelector('form[onsubmit="handleProfileUpdate(event)"]').addEventListener('submit', handleProfileUpdate);
