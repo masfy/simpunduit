@@ -417,14 +417,15 @@ function renderChart(dataObj) {
                         usePointStyle: true,
                         padding: 20,
                         font: { family: 'Plus Jakarta Sans', size: 12 },
+                        color: 'white', // White text
                         boxWidth: 10
                     }
                 },
                 tooltip: {
-                    backgroundColor: 'rgba(255, 255, 255, 0.95)',
-                    titleColor: '#2D3436',
-                    bodyColor: '#2D3436',
-                    borderColor: 'rgba(0,0,0,0.05)',
+                    backgroundColor: 'rgba(30, 30, 50, 0.9)',
+                    titleColor: 'white',
+                    bodyColor: 'white',
+                    borderColor: 'rgba(255,255,255,0.1)',
                     borderWidth: 1,
                     padding: 12,
                     bodyFont: { family: 'Plus Jakarta Sans', size: 13 },
