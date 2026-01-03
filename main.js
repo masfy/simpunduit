@@ -20,13 +20,13 @@ let tempPhotoBase64 = '';
 document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('trxDate').valueAsDate = new Date();
     loadData();
-    
+
     // Attach event listeners
     document.getElementById('dashboardFilter').addEventListener('change', renderDashboard);
     document.getElementById('trxForm').addEventListener('submit', handleTrxSubmit);
-    document.getElementById('filePhoto').addEventListener('change', function() { handlePhotoUpload(this); });
+    document.getElementById('filePhoto').addEventListener('change', function () { handlePhotoUpload(this); });
     document.querySelector('form[onsubmit="handleProfileUpdate(event)"]').addEventListener('submit', handleProfileUpdate);
-    
+
     // Navigation
     document.getElementById('nav-dashboard').addEventListener('click', () => navTo('dashboard'));
     document.getElementById('nav-history').addEventListener('click', () => navTo('history'));
@@ -40,7 +40,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     // Category Add
     document.querySelector('.input-group button').addEventListener('click', handleAddCategory);
-    
+
     // Radio buttons
     document.getElementById('typeExp').addEventListener('change', loadCategoryOptions);
     document.getElementById('typeInc').addEventListener('change', loadCategoryOptions);
@@ -50,8 +50,22 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function loadData() {
+    // 1. Optimistic Load from Cache
+    const cached = localStorage.getItem('appState');
+    if (cached) {
+        try {
+            const parsed = JSON.parse(cached);
+            if (parsed.cats && parsed.trx) {
+                appState = parsed;
+                finishLoad(); // Show UI immediately
+            }
+        } catch (e) {
+            console.error("Cache parse error", e);
+        }
+    }
+
+    // 2. Fetch Fresh Data (Background)
     try {
-        // Try fetching from API
         const [cats, trx, prof] = await Promise.all([
             fetch(`${API_URL}?action=getCategories`).then(res => res.json()),
             fetch(`${API_URL}?action=getTransactions`).then(res => res.json()),
@@ -61,26 +75,28 @@ async function loadData() {
         appState.cats = cats;
         appState.trx = trx;
         appState.profile = prof;
-        finishLoad();
-    } catch (error) {
-        console.warn("Backend connection failed, using mock data.", error);
-        // Fallback to mock data
-        appState.cats = mockData.cats;
-        appState.profile = mockData.profile;
-        appState.trx = mockData.trx;
-        finishLoad();
 
-        // Optional: Notify user
-        const Toast = Swal.mixin({
-            toast: true,
-            position: 'top-end',
-            showConfirmButton: false,
-            timer: 3000
-        });
-        Toast.fire({
-            icon: 'warning',
-            title: 'Mode Offline / Simulasi'
-        });
+        // Update Cache
+        localStorage.setItem('appState', JSON.stringify(appState));
+
+        finishLoad(); // Re-render with fresh data
+    } catch (error) {
+        console.warn("Backend connection failed.", error);
+        if (!cached) {
+            // Only fallback to mock if no cache exists
+            appState.cats = mockData.cats;
+            appState.profile = mockData.profile;
+            appState.trx = mockData.trx;
+            finishLoad();
+
+            const Toast = Swal.mixin({
+                toast: true,
+                position: 'top-end',
+                showConfirmButton: false,
+                timer: 3000
+            });
+            Toast.fire({ icon: 'warning', title: 'Mode Offline / Simulasi' });
+        }
     }
 }
 
