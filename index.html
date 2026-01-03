@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="id">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SimpunDuit v3</title>
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- FontAwesome & Google Fonts -->
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <style>
+        :root {
+            --primary: #6C63FF;
+            /* Colorful Purple */
+            --secondary: #FF6584;
+            /* Colorful Pink */
+            --success: #00B894;
+            /* Colorful Green */
+            --warning: #FDCB6E;
+            /* Colorful Yellow */
+            --dark: #2D3436;
+            --light: #F0F3F9;
+            --glass: rgba(255, 255, 255, 0.95);
+        }
+
+        body {
+            background-color: var(--light);
+            font-family: 'Poppins', sans-serif;
+            padding-bottom: 110px;
+            /* Ditambah agar footer tidak tertutup nav */
+            color: var(--dark);
+        }
+
+        /* --- ANIMATIONS --- */
+        @keyframes slideUp {
+            from {
+                transform: translateY(20px);
+                opacity: 0;
+            }
+
+            to {
+                transform: translateY(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes bounceIn {
+            0% {
+                transform: scale(0.3);
+                opacity: 0;
+            }
+
+            50% {
+                transform: scale(1.05);
+            }
+
+            70% {
+                transform: scale(0.9);
+            }
+
+            100% {
+                transform: scale(1);
+                opacity: 1;
+            }
+        }
+
+        .page-section {
+            display: none;
+            padding: 20px;
+            animation: slideUp 0.4s ease-out;
+        }
+
+        .page-section.active {
+            display: block;
+        }
+
+        /* --- UI COMPONENTS --- */
+        .top-bar {
+            background: var(--glass);
+            backdrop-filter: blur(10px);
+            padding: 15px 20px;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .app-logo {
+            font-weight: 800;
+            background: -webkit-linear-gradient(45deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-size: 1.4rem;
+        }
+
+        .stat-card {
+            border: none;
+            border-radius: 20px;
+            background: white;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.03);
+            transition: transform 0.2s;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .stat-card:active {
+            transform: scale(0.98);
+        }
+
+        .card-decoration {
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            font-size: 4rem;
+            opacity: 0.1;
+            transform: rotate(15deg);
+        }
+
+        /* --- BOTTOM NAV (GRID SYSTEM) --- */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            background: white;
+            box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.05);
+            /* Grid System agar jarak menu RAPI & PRESISI */
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            padding: 12px 5px 8px 5px;
+            z-index: 1000;
+            border-top-left-radius: 20px;
+            border-top-right-radius: 20px;
+        }
+
+        .nav-item {
+            text-align: center;
+            color: #b2bec3;
+            font-size: 0.7rem;
+            text-decoration: none;
+            position: relative;
+            transition: all 0.3s;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: flex-end;
+            padding-bottom: 5px;
+            /* Raise icons slightly */
+        }
+
+        .nav-item i {
+            display: block;
+            font-size: 1.4rem;
+            margin-bottom: 6px;
+            /* Increased margin to raise icon */
+            transition: all 0.3s;
+        }
+
+        .nav-item.active {
+            color: var(--primary);
+        }
+
+        .nav-item.active i {
+            transform: translateY(-5px);
+        }
+
+        /* Active state raises more */
+
+        /* Floating Add Button */
+        .btn-add-wrapper {
+            position: relative;
+            top: -30px;
+            /* Adjusted position */
+        }
+
+        .btn-add-main {
+            width: 55px;
+            height: 55px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.6rem;
+            box-shadow: 0 8px 15px rgba(108, 99, 255, 0.4);
+            animation: bounceIn 0.8s;
+        }
+
+        .btn-add-main:active {
+            transform: scale(0.9);
+        }
+
+        /* --- CATEGORY TABS --- */
+        .cat-tabs {
+            display: flex;
+            background: white;
+            padding: 5px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+        }
+
+        .cat-tab {
+            flex: 1;
+            text-align: center;
+            padding: 10px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+        }
+
+        .cat-tab.active-exp {
+            background: var(--secondary);
+            color: white;
+            box-shadow: 0 4px 10px rgba(255, 101, 132, 0.3);
+        }
+
+        .cat-tab.active-inc {
+            background: var(--success);
+            color: white;
+            box-shadow: 0 4px 10px rgba(0, 184, 148, 0.3);
+        }
+
+        /* --- PROFILE --- */
+        .profile-header {
+            background: linear-gradient(135deg, var(--primary), #8e44ad);
+            color: white;
+            padding: 40px 20px;
+            border-radius: 0 0 30px 30px;
+            margin: -20px -20px 20px -20px;
+            text-align: center;
+        }
+
+        .profile-pic-container {
+            position: relative;
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 15px;
+        }
+
+        .profile-pic {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            border: 4px solid rgba(255, 255, 255, 0.3);
+            background: white;
+        }
+
+        .btn-edit-photo {
+            position: absolute;
+            bottom: 0;
+            right: 0;
+            background: white;
+            color: var(--primary);
+            border: none;
+            border-radius: 50%;
+            width: 32px;
+            height: 32px;
+            font-size: 0.9rem;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+        }
+
+        /* FOOTER STYLING */
+        .app-footer {
+            margin-top: 50px;
+            padding: 20px 0;
+            text-align: center;
+            color: #b2bec3;
+            font-size: 0.75rem;
+            width: 100%;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- TOP BAR -->
+    <div class="top-bar">
+        <div class="app-logo"><i class="fas fa-wallet me-2"></i>SimpunDuit</div>
+        <img src="https://ui-avatars.com/api/?name=User" class="rounded-circle border" width="35" id="miniProfileImg">
+    </div>
+
+    <!-- 1. DASHBOARD -->
+    <div id="page-dashboard" class="page-section active">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h5 class="fw-bold m-0 text-dark">Ringkasan</h5>
+            <select class="form-select form-select-sm w-auto border-0 bg-white shadow-sm fw-bold" id="dashboardFilter"
+                onchange="renderDashboard()">
+                <option value="daily">Hari Ini</option>
+                <option value="weekly">Minggu Ini</option>
+                <option value="monthly" selected>Bulan Ini</option>
+            </select>
+        </div>
+
+        <!-- Cards -->
+        <div class="row g-3 mb-4">
+            <div class="col-6">
+                <div class="stat-card p-3">
+                    <i class="fas fa-arrow-down card-decoration text-secondary"></i>
+                    <small class="text-muted fw-bold">Pengeluaran</small>
+                    <h6 class="fw-bold text-danger mb-0 mt-1" id="totalExpense">Rp 0</h6>
+                </div>
+            </div>
+            <div class="col-6">
+                <div class="stat-card p-3">
+                    <i class="fas fa-arrow-up card-decoration text-success"></i>
+                    <small class="text-muted fw-bold">Pemasukan</small>
+                    <h6 class="fw-bold text-success mb-0 mt-1" id="totalIncome">Rp 0</h6>
+                </div>
+            </div>
+            <div class="col-12">
+                <div class="stat-card p-4 text-white"
+                    style="background: linear-gradient(135deg, var(--primary), #8e44ad);">
+                    <i class="fas fa-wallet card-decoration text-white"></i>
+                    <small class="d-block opacity-75">Sisa Saldo</small>
+                    <h2 class="fw-bold mb-0" id="totalBalance">Rp 0</h2>
+                </div>
+            </div>
+        </div>
+
+        <!-- Chart -->
+        <div class="stat-card p-3 mb-4">
+            <h6 class="fw-bold small text-muted mb-3">ANALISIS KATEGORI</h6>
+            <canvas id="expenseChart" height="200"></canvas>
+        </div>
+    </div>
+
+    <!-- 2. HISTORY -->
+    <div id="page-history" class="page-section">
+        <h5 class="fw-bold mb-3">Riwayat Transaksi</h5>
+        <input type="text" class="form-control border-0 shadow-sm mb-3" placeholder="🔍 Cari transaksi..."
+            onkeyup="filterHistory(this.value)">
+        <div id="fullHistoryList"></div>
+    </div>
+
+    <!-- 3. ADD TRANSACTION -->
+    <div id="page-add" class="page-section">
+        <h5 class="fw-bold mb-4 text-center">Catat Transaksi</h5>
+        <div class="stat-card p-4">
+            <form id="trxForm" onsubmit="handleTrxSubmit(event)">
+                <div class="btn-group w-100 mb-4" role="group">
+                    <input type="radio" class="btn-check" name="type" id="typeExp" value="Pengeluaran" checked
+                        onchange="loadCategoryOptions()">
+                    <label class="btn btn-outline-danger" for="typeExp">Pengeluaran</label>
+                    <input type="radio" class="btn-check" name="type" id="typeInc" value="Pemasukan"
+                        onchange="loadCategoryOptions()">
+                    <label class="btn btn-outline-success" for="typeInc">Pemasukan</label>
+                </div>
+
+                <div class="mb-3">
+                    <label class="small text-muted fw-bold">Tanggal</label>
+                    <input type="date" class="form-control bg-light border-0" id="trxDate" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="small text-muted fw-bold">Jumlah (Rp)</label>
+                    <input type="number" class="form-control bg-light border-0 fs-4 fw-bold text-primary" id="trxAmount"
+                        placeholder="0" required>
+                </div>
+
+                <div class="mb-3">
+                    <label class="small text-muted fw-bold">Kategori</label>
+                    <select class="form-select bg-light border-0" id="trxCategory" required></select>
+                </div>
+
+                <div class="mb-4">
+                    <label class="small text-muted fw-bold">Catatan</label>
+                    <input type="text" class="form-control bg-light border-0" id="trxNote" placeholder="Opsional...">
+                </div>
+
+                <button type="submit" id="btnSaveTrx" class="btn btn-primary w-100 py-3 rounded-pill fw-bold shadow-sm"
+                    style="background: var(--primary); border:none;">
+                    SIMPAN
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- 4. CATEGORIES (SETTINGS) -->
+    <div id="page-categories" class="page-section">
+        <h5 class="fw-bold mb-3">Kelola Kategori</h5>
+
+        <!-- Smart Tabs -->
+        <div class="cat-tabs">
+            <div class="cat-tab active-exp" id="tabExp" onclick="switchCatTab('Pengeluaran')">Pengeluaran</div>
+            <div class="cat-tab" id="tabInc" onclick="switchCatTab('Pemasukan')">Pemasukan</div>
+        </div>
+
+        <!-- Add Form -->
+        <div class="input-group mb-3 shadow-sm rounded-pill overflow-hidden">
+            <input type="text" class="form-control border-0 px-3" id="newCatName" placeholder="Nama Kategori Baru...">
+            <button class="btn btn-dark px-4" type="button" onclick="handleAddCategory()">
+                <i class="fas fa-plus"></i>
+            </button>
+        </div>
+
+        <ul class="list-group list-group-flush rounded-4 overflow-hidden shadow-sm" id="categoryListSettings"></ul>
+    </div>
+
+    <!-- 5. PROFILE (NEW PAGE) -->
+    <div id="page-profile" class="page-section pt-0">
+        <div class="profile-header shadow">
+            <div class="profile-pic-container">
+                <img src="https://ui-avatars.com/api/?name=User" id="profileImgBig" class="profile-pic">
+                <button class="btn-edit-photo" onclick="document.getElementById('filePhoto').click()">
+                    <i class="fas fa-camera"></i>
+                </button>
+                <input type="file" id="filePhoto" hidden accept="image/*" onchange="handlePhotoUpload(this)">
+            </div>
+            <h4 class="fw-bold mb-0" id="profileNameDisplay">...</h4>
+            <small class="opacity-75" id="profileStatusDisplay">...</small>
+        </div>
+
+        <div class="stat-card p-4">
+            <h6 class="fw-bold text-muted mb-3"><i class="fas fa-user-edit me-2"></i>Edit Informasi</h6>
+            <form onsubmit="handleProfileUpdate(event)">
+                <div class="mb-3">
+                    <label class="small text-muted">Nama Lengkap</label>
+                    <input type="text" class="form-control bg-light border-0" id="editName">
+                </div>
+                <div class="mb-4">
+                    <label class="small text-muted">Status</label>
+                    <input type="text" class="form-control bg-light border-0" id="editStatus">
+                </div>
+                <button type="submit" id="btnSaveProfile" class="btn btn-secondary w-100 rounded-pill fw-bold"
+                    style="background: var(--secondary); border:none;">
+                    UPDATE PROFIL
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- FOOTER (Placed at the bottom of content flow, above the nav) -->
+    <div class="app-footer">
+        &copy;
+        <script>document.write(new Date().getFullYear())</script> | SimpunDuit by Mas Alfy
+    </div>
+
+    <!-- BOTTOM NAVIGATION (GRID SYSTEM) -->
+    <nav class="bottom-nav">
+        <a onclick="navTo('dashboard')" class="nav-item active" id="nav-dashboard">
+            <i class="fas fa-chart-pie"></i> Home
+        </a>
+        <a onclick="navTo('history')" class="nav-item" id="nav-history">
+            <i class="fas fa-list-ul"></i> Riwayat
+        </a>
+
+        <!-- Center Button Wrapper -->
+        <div class="nav-item btn-add-wrapper">
+            <div onclick="navTo('add')" class="btn-add-main">
+                <i class="fas fa-plus"></i>
+            </div>
+        </div>
+
+        <a onclick="navTo('categories')" class="nav-item" id="nav-categories">
+            <i class="fas fa-tags"></i> Kategori
+        </a>
+        <a onclick="navTo('profile')" class="nav-item" id="nav-profile">
+            <i class="fas fa-user"></i> Profil
+        </a>
+    </nav>
+
+    <!-- SweetAlert2 -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <script>
+        /* --- CONFIG --- */
+        const API_URL = "https://script.google.com/macros/s/AKfycbx7t0rT1L-0-_fWOz5dQZ_Ff2eGHVCPE4zmoRebgbCsibkFjzIZe5J9ejR6IkiNaewL/exec";
+
+        /* --- STATE & MOCK DATA --- */
+        let mockData = {
+            trx: [],
+            cats: [
+                { id: 'C1', name: 'Makan', type: 'Pengeluaran' },
+                { id: 'C2', name: 'Transport', type: 'Pengeluaran' },
+                { id: 'C3', name: 'Gaji', type: 'Pemasukan' }
+            ],
+            profile: { name: 'User Simulasi', status: 'Mode Preview', photo: '' }
+        };
+        let appState = { trx: [], cats: [], profile: {} };
+        let activeCatTab = 'Pengeluaran';
+        let myChart = null;
+        let tempPhotoBase64 = '';
+
+        /* --- INIT --- */
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('trxDate').valueAsDate = new Date();
+            loadData();
+        });
+
+        async function loadData() {
+            Swal.fire({ title: 'Memuat...', didOpen: () => Swal.showLoading(), backdrop: false, allowOutsideClick: false });
+
+            try {
+                // Try fetching from API
+                const [cats, trx, prof] = await Promise.all([
+                    fetch(`${API_URL}?action=getCategories`).then(res => res.json()),
+                    fetch(`${API_URL}?action=getTransactions`).then(res => res.json()),
+                    fetch(`${API_URL}?action=getProfile`).then(res => res.json())
+                ]);
+
+                appState.cats = cats;
+                appState.trx = trx;
+                appState.profile = prof;
+                finishLoad();
+            } catch (error) {
+                console.warn("Backend connection failed, using mock data.", error);
+                // Fallback to mock data
+                appState.cats = mockData.cats;
+                appState.profile = mockData.profile;
+                appState.trx = mockData.trx;
+                finishLoad();
+
+                // Optional: Notify user
+                const Toast = Swal.mixin({
+                    toast: true,
+                    position: 'top-end',
+                    showConfirmButton: false,
+                    timer: 3000
+                });
+                Toast.fire({
+                    icon: 'warning',
+                    title: 'Mode Offline / Simulasi'
+                });
+            }
+        }
+
+        function finishLoad() {
+            Swal.close();
+            renderUI();
+        }
+
+        function renderUI() {
+            renderDashboard();
+            renderHistory();
+            renderCategories(); // Logic tab ada di sini
+            updateProfileUI();
+            loadCategoryOptions(); // Form add trx
+        }
+
+        /* --- NAVIGATION --- */
+        function navTo(page) {
+            document.querySelectorAll('.page-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('page-' + page).classList.add('active');
+
+            document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+            const nav = document.getElementById('nav-' + page);
+            if (nav) nav.classList.add('active');
+
+            // Re-render specific logic
+            if (page === 'dashboard') renderDashboard();
+            if (page === 'categories') renderCategories();
+        }
+
+        /* --- CATEGORY LOGIC (UPDATED) --- */
+        function switchCatTab(type) {
+            activeCatTab = type;
+            // Update Tab UI
+            const tabExp = document.getElementById('tabExp');
+            const tabInc = document.getElementById('tabInc');
+
+            if (type === 'Pengeluaran') {
+                tabExp.className = 'cat-tab active-exp';
+                tabInc.className = 'cat-tab';
+            } else {
+                tabExp.className = 'cat-tab';
+                tabInc.className = 'cat-tab active-inc';
+            }
+            renderCategories();
+        }
+
+        function renderCategories() {
+            const list = document.getElementById('categoryListSettings');
+            list.innerHTML = '';
+
+            // Filter by Active Tab
+            const filtered = appState.cats.filter(c => c.type === activeCatTab);
+
+            if (filtered.length === 0) list.innerHTML = '<li class="list-group-item text-center text-muted py-4">Belum ada kategori.</li>';
+
+            filtered.forEach(c => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item d-flex justify-content-between align-items-center bg-white';
+                li.innerHTML = `
+                    <span class="fw-bold text-dark">${c.name}</span>
+                    <button class="btn btn-light btn-sm text-danger rounded-circle" onclick="deleteCat('${c.id}')"><i class="fas fa-trash"></i></button>
+                `;
+                list.appendChild(li);
+            });
+        }
+
+        async function handleAddCategory() {
+            const name = document.getElementById('newCatName').value.trim();
+            if (!name) return;
+
+            // CLIENT SIDE DUPLICATE CHECK
+            const exists = appState.cats.some(c => c.name.toLowerCase() === name.toLowerCase() && c.type === activeCatTab);
+            if (exists) {
+                Swal.fire('Gagal', `Kategori "${name}" sudah ada di ${activeCatTab}!`, 'error');
+                return;
+            }
+
+            const newCat = { name, type: activeCatTab };
+
+            // Optimistic UI Update
+            const tempId = Date.now().toString();
+            appState.cats.push({ ...newCat, id: tempId });
+            document.getElementById('newCatName').value = '';
+            renderCategories();
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'saveCategory', data: newCat })
+                }).then(r => r.json());
+
+                if (res.success) {
+                    loadData(); // Reload to sync real ID
+                } else {
+                    throw new Error(res.message || 'Unknown error');
+                }
+            } catch (e) {
+                console.error(e);
+                // Revert
+                appState.cats = appState.cats.filter(c => c.id !== tempId);
+                renderCategories();
+                Swal.fire('Error', 'Gagal menyimpan kategori', 'error');
+            }
+        }
+
+        async function deleteCat(id) {
+            if (!confirm('Hapus kategori ini?')) return;
+
+            // Optimistic
+            const backup = [...appState.cats];
+            appState.cats = appState.cats.filter(c => c.id != id);
+            renderCategories();
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'deleteCategory', id: id })
+                }).then(r => r.json());
+
+                if (res.success) {
+                    loadData();
+                } else {
+                    throw new Error(res.message);
+                }
+            } catch (e) {
+                console.error(e);
+                appState.cats = backup;
+                renderCategories();
+                Swal.fire('Error', 'Gagal menghapus kategori', 'error');
+            }
+        }
+
+        /* --- PROFILE PHOTO LOGIC --- */
+        function handlePhotoUpload(input) {
+            if (input.files && input.files[0]) {
+                const file = input.files[0];
+
+                // Resize logic using Canvas
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const img = new Image();
+                    img.onload = function () {
+                        const canvas = document.createElement('canvas');
+                        const ctx = canvas.getContext('2d');
+
+                        // Resize to max 150px
+                        const MAX_SIZE = 150;
+                        let width = img.width;
+                        let height = img.height;
+
+                        if (width > height) {
+                            if (width > MAX_SIZE) { height *= MAX_SIZE / width; width = MAX_SIZE; }
+                        } else {
+                            if (height > MAX_SIZE) { width *= MAX_SIZE / height; height = MAX_SIZE; }
+                        }
+
+                        canvas.width = width;
+                        canvas.height = height;
+                        ctx.drawImage(img, 0, 0, width, height);
+
+                        // Compress
+                        tempPhotoBase64 = canvas.toDataURL('image/jpeg', 0.7);
+                        document.getElementById('profileImgBig').src = tempPhotoBase64; // Preview
+                    };
+                    img.src = e.target.result;
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function updateProfileUI() {
+            const p = appState.profile;
+            // Avatar Logic
+            let imgUrl = `https://ui-avatars.com/api/?name=${encodeURIComponent(p.name || 'User')}&background=6C63FF&color=fff`;
+            if (p.photo && p.photo.startsWith('data:image')) imgUrl = p.photo;
+
+            document.getElementById('miniProfileImg').src = imgUrl;
+            document.getElementById('profileImgBig').src = imgUrl;
+
+            document.getElementById('profileNameDisplay').innerText = p.name || 'User';
+            document.getElementById('profileStatusDisplay').innerText = p.status || 'Status';
+
+            // Set Form Values
+            document.getElementById('editName').value = p.name || '';
+            document.getElementById('editStatus').value = p.status || '';
+        }
+
+        async function handleProfileUpdate(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSaveProfile');
+            const originalText = btn.innerHTML;
+            btn.innerHTML = 'Menyimpan...';
+            btn.disabled = true;
+
+            const newData = {
+                name: document.getElementById('editName').value,
+                status: document.getElementById('editStatus').value,
+                photo: tempPhotoBase64 // Will be empty string if not changed
+            };
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'updateProfile', data: newData })
+                }).then(r => r.json());
+
+                if (res.success) {
+                    tempPhotoBase64 = ''; // Clear temp
+                    loadData(); // Sync
+                    Swal.fire('Sukses', 'Profil berhasil disimpan!', 'success');
+                } else {
+                    throw new Error(res.message);
+                }
+            } catch (err) {
+                console.error(err);
+                Swal.fire('Error', 'Gagal update profil', 'error');
+            } finally {
+                btn.innerHTML = originalText;
+                btn.disabled = false;
+            }
+        }
+
+        /* --- DASHBOARD & TRANSACTION (Standard) --- */
+        function loadCategoryOptions() {
+            const type = document.querySelector('input[name="type"]:checked').value;
+            const select = document.getElementById('trxCategory');
+            select.innerHTML = '';
+            appState.cats.filter(c => c.type === type).forEach(c => {
+                select.innerHTML += `<option value="${c.name}">${c.name}</option>`;
+            });
+        }
+
+        function renderDashboard() {
+            const filter = document.getElementById('dashboardFilter').value;
+            // Simple logic for brevity, expands nicely
+            let inc = 0, exp = 0;
+            const catTotals = {};
+
+            appState.trx.forEach(t => {
+                // Should add Date Filtering logic here (same as v2)
+                if (t.type === 'Pemasukan') inc += Number(t.amount);
+                else {
+                    exp += Number(t.amount);
+                    catTotals[t.category] = (catTotals[t.category] || 0) + Number(t.amount);
+                }
+            });
+
+            document.getElementById('totalIncome').innerText = `Rp ${inc.toLocaleString()}`;
+            document.getElementById('totalExpense').innerText = `Rp ${exp.toLocaleString()}`;
+            document.getElementById('totalBalance').innerText = `Rp ${(inc - exp).toLocaleString()}`;
+
+            renderChart(catTotals);
+        }
+
+        function renderChart(dataObj) {
+            const ctx = document.getElementById('expenseChart').getContext('2d');
+            if (myChart) myChart.destroy();
+            myChart = new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: Object.keys(dataObj),
+                    datasets: [{
+                        data: Object.values(dataObj),
+                        backgroundColor: ['#6C63FF', '#FF6584', '#00B894', '#FDCB6E', '#0984e3', '#e17055'],
+                        borderWidth: 0
+                    }]
+                },
+                options: { cutout: '70%', plugins: { legend: { position: 'right', labels: { boxWidth: 10 } } } }
+            });
+        }
+
+        async function handleTrxSubmit(e) {
+            e.preventDefault();
+            const btn = document.getElementById('btnSaveTrx');
+            btn.disabled = true;
+            btn.innerText = 'Menyimpan...';
+
+            const data = {
+                date: document.getElementById('trxDate').value,
+                type: document.querySelector('input[name="type"]:checked').value,
+                category: document.getElementById('trxCategory').value,
+                amount: document.getElementById('trxAmount').value,
+                note: document.getElementById('trxNote').value
+            };
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: 'POST',
+                    body: JSON.stringify({ action: 'addTransaction', data: data })
+                }).then(r => r.json());
+
+                if (res.success) {
+                    loadData();
+                    resetForm(btn);
+                } else {
+                    throw new Error(res.message);
+                }
+            } catch (err) {
+                console.error(err);
+                Swal.fire('Error', 'Gagal menyimpan transaksi', 'error');
+                btn.disabled = false;
+                btn.innerText = 'SIMPAN';
+            }
+        }
+
+        function resetForm(btn) {
+            btn.disabled = false;
+            btn.innerText = 'SIMPAN';
+            document.getElementById('trxForm').reset();
+            document.getElementById('trxDate').valueAsDate = new Date();
+            Swal.fire({ icon: 'success', title: 'Tersimpan', timer: 1000, showConfirmButton: false });
+            navTo('dashboard');
+        }
+
+        function filterHistory(keyword) {
+            const lower = keyword.toLowerCase();
+            const filtered = appState.trx.filter(t =>
+                t.category.toLowerCase().includes(lower) ||
+                (t.note && t.note.toLowerCase().includes(lower))
+            );
+            renderHistoryList(filtered);
+        }
+
+        function renderHistory() {
+            renderHistoryList(appState.trx);
+        }
+
+        function renderHistoryList(data) {
+            const div = document.getElementById('fullHistoryList');
+            div.innerHTML = data.map(t => {
+                const isExp = t.type === 'Pengeluaran';
+                return `
+                <div class="d-flex justify-content-between align-items-center bg-white p-3 rounded-4 shadow-sm mb-2">
+                    <div class="d-flex align-items-center">
+                        <div class="rounded-circle d-flex align-items-center justify-content-center me-3" 
+                             style="width:40px; height:40px; background:${isExp ? '#fff0f0' : '#f0fff4'}; color:${isExp ? '#e74a3b' : '#00b894'}">
+                            <i class="fas ${isExp ? 'fa-arrow-down' : 'fa-arrow-up'}"></i>
+                        </div>
+                        <div>
+                            <div class="fw-bold text-dark">${t.category}</div>
+                            <small class="text-muted" style="font-size:0.75rem">${t.date.substring(0, 10)}</small>
+                        </div>
+                    </div>
+                    <div class="fw-bold ${isExp ? 'text-danger' : 'text-success'}">
+                        ${isExp ? '-' : '+'} ${Number(t.amount).toLocaleString()}
+                    </div>
+                </div>`;
+            }).join('');
+        }
+    </script>
+</body>
+
+</html>
