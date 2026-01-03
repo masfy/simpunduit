@@ -1,0 +1,335 @@
+:root {
+    --primary: #6C63FF;
+    /* Colorful Purple */
+    --secondary: #FF6584;
+    /* Colorful Pink */
+    --success: #00B894;
+    /* Colorful Green */
+    --warning: #FDCB6E;
+    /* Colorful Yellow */
+    --dark: #2D3436;
+    --light: #F0F3F9;
+    --glass: rgba(255, 255, 255, 0.95);
+}
+
+body {
+    background-color: var(--light);
+    font-family: 'Plus Jakarta Sans', sans-serif;
+    padding-bottom: 110px;
+    /* Ditambah agar footer tidak tertutup nav */
+    color: var(--dark);
+}
+
+/* --- ANIMATIONS --- */
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes bounceIn {
+    0% {
+        transform: scale(0.3);
+        opacity: 0;
+    }
+
+    50% {
+        transform: scale(1.05);
+    }
+
+    70% {
+        transform: scale(0.9);
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+        opacity: 1;
+    }
+
+    50% {
+        transform: scale(1.1);
+        opacity: 0.8;
+    }
+
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.page-section {
+    display: none;
+    padding: 20px;
+    animation: slideUp 0.4s ease-out;
+}
+
+.page-section.active {
+    display: block;
+}
+
+/* --- LOADING SCREEN --- */
+#loading-screen {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: white;
+    z-index: 9999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    transition: opacity 0.5s;
+}
+
+.loader-logo {
+    font-size: 3rem;
+    background: -webkit-linear-gradient(45deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: pulse 1.5s infinite;
+    margin-bottom: 20px;
+}
+
+.loader-spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid rgba(108, 99, 255, 0.1);
+    border-left-color: var(--primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+/* --- UI COMPONENTS --- */
+.top-bar {
+    background: var(--glass);
+    backdrop-filter: blur(10px);
+    padding: 15px 20px;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.app-logo {
+    font-weight: 800;
+    background: -webkit-linear-gradient(45deg, var(--primary), var(--secondary));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 1.4rem;
+}
+
+.stat-card {
+    border: none;
+    border-radius: 20px;
+    background: white;
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.03);
+    transition: transform 0.2s;
+    overflow: hidden;
+    position: relative;
+}
+
+.stat-card:active {
+    transform: scale(0.98);
+}
+
+.card-decoration {
+    position: absolute;
+    top: -10px;
+    right: -10px;
+    font-size: 4rem;
+    opacity: 0.1;
+    transform: rotate(15deg);
+}
+
+/* --- BOTTOM NAV (DOCKED TO BOTTOM) --- */
+.bottom-nav {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    background: linear-gradient(135deg, var(--primary), var(--secondary));
+    /* Colorful Background */
+    box-shadow: 0 -5px 20px rgba(0, 0, 0, 0.1);
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    padding: 12px 5px 25px 5px;
+    /* Added bottom padding for footer text */
+    z-index: 1000;
+    border-radius: 25px 25px 0 0;
+    /* Only top corners rounded */
+    margin-bottom: 0;
+}
+
+.nav-item {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.7);
+    /* White with opacity */
+    font-size: 0.7rem;
+    text-decoration: none;
+    position: relative;
+    transition: all 0.3s;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-end;
+    padding-bottom: 5px;
+    /* Raise icons slightly */
+}
+
+.nav-item i {
+    display: block;
+    font-size: 1.4rem;
+    margin-bottom: 6px;
+    /* Increased margin to raise icon */
+    transition: all 0.3s;
+}
+
+.nav-item.active {
+    color: white;
+    font-weight: bold;
+}
+
+.nav-item.active i {
+    transform: translateY(-5px);
+    text-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+}
+
+/* Floating Add Button */
+.btn-add-wrapper {
+    position: relative;
+    top: -30px;
+    /* Adjusted position */
+}
+
+.btn-add-main {
+    width: 55px;
+    height: 55px;
+    border-radius: 50%;
+    background: white;
+    /* White button on colorful nav */
+    color: var(--primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    box-shadow: 0 8px 15px rgba(108, 99, 255, 0.4);
+    animation: bounceIn 0.8s;
+}
+
+.btn-add-main:active {
+    transform: scale(0.9);
+}
+
+/* --- CATEGORY TABS --- */
+.cat-tabs {
+    display: flex;
+    background: white;
+    padding: 5px;
+    border-radius: 15px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.02);
+}
+
+.cat-tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    border-radius: 12px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 0.9rem;
+    transition: all 0.3s;
+}
+
+.cat-tab.active-exp {
+    background: var(--secondary);
+    color: white;
+    box-shadow: 0 4px 10px rgba(255, 101, 132, 0.3);
+}
+
+.cat-tab.active-inc {
+    background: var(--success);
+    color: white;
+    box-shadow: 0 4px 10px rgba(0, 184, 148, 0.3);
+}
+
+/* --- PROFILE --- */
+.profile-header {
+    background: linear-gradient(135deg, var(--primary), #8e44ad);
+    color: white;
+    padding: 40px 20px;
+    border-radius: 0 0 30px 30px;
+    margin: -20px -20px 20px -20px;
+    text-align: center;
+}
+
+.profile-pic-container {
+    position: relative;
+    width: 100px;
+    height: 100px;
+    margin: 0 auto 15px;
+}
+
+.profile-pic {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    background: white;
+}
+
+.btn-edit-photo {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    background: white;
+    color: var(--primary);
+    border: none;
+    border-radius: 50%;
+    width: 32px;
+    height: 32px;
+    font-size: 0.9rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+}
+
+/* FOOTER STYLING */
+.app-footer {
+    position: absolute;
+    bottom: 5px;
+    width: 100%;
+    text-align: center;
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.6rem;
+    pointer-events: none;
+    grid-column: 1 / -1;
+    /* Span all columns */
+}
