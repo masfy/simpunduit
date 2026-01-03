@@ -56,7 +56,6 @@ body {
 @keyframes pulse {
     0% {
         transform: scale(1);
-        opacity: 1;
     }
 
     50% {
@@ -66,7 +65,6 @@ body {
 
     100% {
         transform: scale(1);
-        opacity: 1;
     }
 }
 
@@ -122,13 +120,16 @@ body {
 
 /* --- UI COMPONENTS --- */
 .top-bar {
-    background: var(--glass);
-    backdrop-filter: blur(10px);
+    background: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(15px);
+    -webkit-backdrop-filter: blur(15px);
     padding: 15px 20px;
     position: sticky;
     top: 0;
     z-index: 1000;
-    border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.15);
+    /* Stronger Shadow */
     display: flex;
     justify-content: space-between;
     align-items: center;
