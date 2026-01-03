@@ -371,6 +371,7 @@ body {
     grid-column: 1 / -1;
     /* Span all columns */
 }
+
 /* --- CUSTOM DROPDOWN --- */
 .dropdown-menu {
     animation: slideUp 0.3s ease-out;
@@ -388,7 +389,8 @@ body {
     transform: translateX(5px);
 }
 
-.dropdown-item.active, .dropdown-item:active {
+.dropdown-item.active,
+.dropdown-item:active {
     background-color: var(--primary);
     color: white;
 }
